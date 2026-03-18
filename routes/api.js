@@ -8,10 +8,6 @@ const fs = require('fs');
 
 
 
-
-
-
-
 //middleware to verify token
 
 const verifyToken = (req, res, next) => {
@@ -21,10 +17,10 @@ const verifyToken = (req, res, next) => {
         return res.status(401).json({ message: 'No token provided' });
     }
     const  actualToken = token.split(' ')[1]; // Extract token from "
-    try {
-        const decoded = jwt.verify(actualToken, JWT_SECRET);
+    try {                                                              // payload → data inside token
+        const decoded = jwt.verify(actualToken, JWT_SECRET);          // decoded.userId → user identity      decoded → extracted payload
         req.userId = decoded.userId; // attach user id to request      //tokenilu ninnu vanna userId edthu req.userIdyilu edthu vachu.
-        next();
+        next();                                                        // req.userId → make it usable in APIs
     } catch (error) {
         return res.status(401).json({ message:error});
     }
@@ -123,7 +119,7 @@ router.post('/loginapi', async (req, res) => {
         );
 
         // 4. Send token
-        res.status(200).json({ token });
+        res.status(200).json({ token,userId: user._id, username: user.username });
 
     } catch (error) {
         console.error(error);
@@ -284,7 +280,6 @@ router.put('/editrecipe/:id', verifyToken, async (req, res) => {
 
 
 // Delete Recipe API
-
 router.delete('/deleterecipe/:id', verifyToken, async (req, res) => {
     try {
         const recipeId = req.params.id;
@@ -324,5 +319,55 @@ router.delete('/deleterecipe/:id', verifyToken, async (req, res) => {
     }
 });
 
+
+
+router.put('/changepassword', verifyToken, async (req, res) => {
+    try {
+        const { currentPassword, newPassword, confirmPassword } = req.body;
+        console.log("Received data:", { currentPassword, newPassword, confirmPassword });
+
+        // 1. Validate input
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            return res.status(400).json({ message: 'All fields are required' });
+        }
+
+        if (newPassword !== confirmPassword) {
+            return res.status(400).json({ message: 'New password and confirm password do not match' });
+        }
+
+        // 2. Get logged-in user
+        const user = await User.findById(req.userId);
+        console.log("User ID from token:", req.userId);
+        console.log("User found:", user);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+console.log("currentPassword:", currentPassword);
+ 
+
+        // 3. Check current password
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+
+        if (!isMatch) {
+            return res.status(401).json({ message: 'Current password is incorrect' });
+        }
+
+        // 4. Hash new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // 5. Update password
+        user.password = hashedPassword;
+
+        await user.save();
+
+        // 6. Response
+        res.status(200).json({ message: 'Password updated successfully' });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
 
 
