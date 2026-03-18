@@ -23,7 +23,7 @@ const verifyToken = (req, res, next) => {
     const  actualToken = token.split(' ')[1]; // Extract token from "
     try {
         const decoded = jwt.verify(actualToken, JWT_SECRET);
-        req.userId = decoded.userId; // attach user id to request
+        req.userId = decoded.userId; // attach user id to request      //tokenilu ninnu vanna userId edthu req.userIdyilu edthu vachu.
         next();
     } catch (error) {
         return res.status(401).json({ message:error});
@@ -281,6 +281,48 @@ router.put('/editrecipe/:id', verifyToken, async (req, res) => {
     }
 });
 
+
+
+// Delete Recipe API
+
+router.delete('/deleterecipe/:id', verifyToken, async (req, res) => {
+    try {
+        const recipeId = req.params.id;
+
+        // 1. Find recipe
+        const recipe = await Recipe.findById(recipeId);
+
+        if (!recipe) {
+            return res.status(404).json({ message: 'Recipe not found' });
+        }
+
+        // 2. Ownership check 🔐
+        if (recipe.userId.toString() !== req.userId) {
+            return res.status(403).json({ message: 'You are not allowed to delete this recipe' });
+        }
+
+        // 3. Delete image file if exists 📸
+        if (recipe.image) {
+            const imagePath = `uploads/${recipe.image}`;
+
+            fs.unlink(imagePath, (err) => {
+                if (err) {
+                    console.log("Image deletion error:", err);
+                }
+            });
+        }
+
+        // 4. Delete recipe from DB 💣
+        await Recipe.findByIdAndDelete(recipeId);
+
+        // 5. Send response
+        res.status(200).json({ message: 'Recipe deleted successfully' });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
 
 
 
