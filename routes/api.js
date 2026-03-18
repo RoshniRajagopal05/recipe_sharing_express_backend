@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const User = require('../models/usermodel');
 const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET
-
+const fs = require('fs');
 
 
 
@@ -192,6 +192,94 @@ router.get('/listingrecipes', async (req, res) => {
 
 
 
+
+// Profile API (Get logged-in user's data + recipes)
+
+router.get('/profile', verifyToken, async (req, res) => {
+    try {
+        // 1. Get logged-in user
+        const user = await User.findById(req.userId).select('username email');
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // 2. Get recipes created by this user
+        const recipes = await Recipe.find({ userId: req.userId });
+
+        // 3. Send combined response
+        res.status(200).json({
+            user: user,
+            recipes: recipes
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
+
+// Edit Recipe API
+router.put('/editrecipe/:id', verifyToken, async (req, res) => {
+    try {
+        const recipeId = req.params.id;
+
+        const recipe = await Recipe.findById(recipeId);
+
+        if (!recipe) {
+            return res.status(404).json({ message: 'Recipe not found' });
+        }
+
+        // 🚫 Ownership check FIRST
+        if (recipe.userId.toString() !== req.userId) {
+            return res.status(403).json({ message: 'You are not allowed to edit this recipe' });
+        }
+
+        // 📸 Now run multer
+        upload.single('image')(req, res, async (err) => {
+            if (err) {
+                return res.status(500).json({ message: 'File upload error' });
+            }
+
+            try {
+                const { title, description, ingredients, steps, cookingtime, difficulty } = req.body;
+
+                recipe.title = title || recipe.title;
+                recipe.description = description || recipe.description;
+                recipe.ingredients = ingredients || recipe.ingredients;
+                recipe.steps = steps || recipe.steps;
+                recipe.cookingtime = cookingtime || recipe.cookingtime;
+                recipe.difficulty = difficulty || recipe.difficulty;
+
+                if (req.file) {
+                    recipe.image = req.file.filename;
+                }
+
+                const updatedRecipe = await recipe.save();
+
+                res.status(200).json({
+                    message: 'Recipe updated successfully',
+                    recipe: updatedRecipe
+                });
+
+            } catch (error) {
+
+                // 🧹 DELETE uploaded file if error happens
+                if (req.file) {
+                    fs.unlink(req.file.path, () => {});
+                }
+
+                console.error(error);
+                res.status(500).json({ message: 'Internal Server Error' });
+            }
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
 
 
 
