@@ -1,0 +1,45 @@
+<div class="center-box">
+
+    <!-- 🔥 USERNAME TITLE -->
+    <h2>
+        Recipes by 
+        <%= recipes[0]?.userId?.username || "User" %> 👤
+    </h2>
+
+    <div class="card-container">
+
+        <% recipes.forEach(recipe => { %>
+
+            <div class="recipe-card">
+
+                <h3><%= recipe.title %></h3>
+
+                <p><%= recipe.description %></p>
+
+                <p><strong>Difficulty:</strong> <%= recipe.difficulty %></p>
+
+                <p><strong>Time:</strong> <%= recipe.cookingtime %> mins</p>
+
+                <p>
+                    <strong>Created:</strong> 
+                    <%= recipe.createdAt ? new Date(recipe.createdAt).toLocaleDateString() : "No Date" %>
+                </p>
+
+                <% if (recipe.image) { %>
+                    <img src="/uploads/<%= recipe.image %>" width="200">
+                <% } %>
+
+                <% if (recipes.length === 0) { %>
+                     <p>No recipes found for this user 😢</p>
+                <% } %>
+
+            </div>
+
+        <% }) %>
+
+    </div>
+
+    <a href="/admin/users" class="btn btn-secondary">
+  ⬅ Back to Users
+</a>
+</div>

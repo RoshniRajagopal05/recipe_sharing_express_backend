@@ -1,5 +1,6 @@
 var createError = require('http-errors');
 var express = require('express');
+const session = require('express-session');
 const db = require('./config/db');
 const dotenv = require('dotenv');
 dotenv.config();
@@ -9,6 +10,8 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var mashupRouter = require('./routes/mashup');
+const expressLayouts = require('express-ejs-layouts');
+
 
 
 
@@ -17,17 +20,26 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+app.set('layout', 'layouts/layout');
+
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+  secret: 'your_secret_key',
+  resave: false,
+  saveUninitialized: false
+}));
 
+app.use(expressLayouts);
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/mashup', mashupRouter);
 app.use('/api', require('./routes/api'));
+app.use('/admin', require('./routes/admin'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

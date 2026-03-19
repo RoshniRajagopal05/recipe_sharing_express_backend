@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+
+    <% if (typeof showNavbar !== 'undefined' && showNavbar) { %>
+        <%- include('../partials/navbar') %>
+    <% } %>
+
+    <!-- 🔥 VERY IMPORTANT -->
+    <%- body %>
+
+</body>
+</html>

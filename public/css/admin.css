@@ -1,0 +1,186 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #121212;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+}
+
+/* Center container */
+.container {
+    width: 300px;
+    margin: 100px auto;
+    padding: 20px;
+    background: #1e1e1e;
+    border-radius: 10px;
+    text-align: center;
+}
+
+/* Input fields */
+input {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+}
+
+/* Button */
+button {
+    padding: 10px 20px;
+    background: #00adb5;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #007b80;
+}
+
+/* Dashboard */
+.dashboard {
+    text-align: center;
+    margin-top: 100px;
+}
+
+a {
+    color: #00adb5;
+    text-decoration: none;
+
+    margin: 10px;
+}
+
+.nav-links {
+    display: flex;        /* 🔥 makes items side by side */
+    align-items: center;
+}
+
+.nav-links a {
+    display: inline-block;  /* override block */
+    margin-left: 20px;
+    color: #000;
+    font-weight: bold;
+}
+
+
+
+/* Navbar */
+.navbar {
+    background: #ffcc00b3;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar h2 {
+    margin: 0;
+    color: #000;
+}
+
+.nav-links a {
+    margin-left: 20px;
+    color: #000;
+    font-weight: bold;
+}
+
+/* Center content */
+.center-box {
+    text-align: center;
+    margin-top: 150px;
+}
+
+table {
+    border-collapse: collapse;
+    width: 70%;
+    margin: 30px auto;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* Header */
+th {
+    background: #ffcc00;
+    color: black;
+    padding: 12px;
+}
+
+/* Rows */
+td {
+    background: #1e1e1e;
+    padding: 12px;
+    transition: 0.3s;
+}
+
+/* Zebra effect */
+tr:nth-child(even) td {
+    background: #2a2a2a;
+}
+
+/* Hover effect 🔥 */
+tr:hover td {
+    background: #3e371a;
+    color: white;
+    transform: scale(1.02);
+    cursor: pointer;
+}
+
+/* Smooth animation */
+tr {
+    transition: 0.3s;
+}
+
+.btn-view {
+    background: #ffcc00;
+    padding: 5px 10px;
+    color: black;
+    border-radius: 5px;
+}
+
+.btn-block {
+    background: red;
+    padding: 5px 10px;
+    color: white;
+    border-radius: 5px;
+}
+
+.btn-unblock {
+    background: green;
+    padding: 5px 10px;
+    color: white;
+    border-radius: 5px;
+}
+
+
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+/* Card */
+.recipe-card {
+    background: #1e1e1e;
+    padding: 15px;
+    width: 250px;
+    border-radius: 10px;
+    transition: 0.3s;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+/* Hover effect 😎 */
+.recipe-card:hover {
+    transform: scale(1.05);
+    background: #3d3103;
+    color: white;
+}
+
+/* Image */
+.recipe-card img {
+    margin-top: 10px;
+    width: 100%;
+    border-radius: 10px;
+}

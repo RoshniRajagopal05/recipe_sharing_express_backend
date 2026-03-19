@@ -1,0 +1,58 @@
+<div class="center-box">
+
+    <h2>🍽️ Recipe Details</h2>
+    <h3><%= recipes[0]?.userId?.username || "User" %></h3>
+
+    <table border="1" cellpadding="10" cellspacing="0" style="margin: auto; border-collapse: collapse; width: 80%; text-align: center;">
+
+        <!-- 🔥 TABLE HEADER -->
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Created Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <!-- 🔥 TABLE BODY -->
+        <tbody>
+
+            <% if (recipes && recipes.length > 0) { %>
+
+                <% recipes.forEach(recipe => { %>
+                    <tr>
+                        <td><%= recipe.title %></td>
+                        <td><%= recipe.description %></td>
+                        <td>
+                            <%= recipe.createdAt 
+                                ? new Date(recipe.createdAt).toLocaleDateString() 
+                                : "No Date" %>
+                        </td>
+                        <td>
+                             <a href="/admin/user-recipes/<%= recipe.userId %>" class="btn-view">View</a>
+
+                        </td>
+                        
+                    </tr>
+                <% }) %>
+
+            <% } else { %>
+
+                <tr>
+                    <td colspan="4">No recipes found 😢</td>
+                </tr>
+
+            <% } %>
+
+        </tbody>
+
+    </table>
+
+    <br>
+
+    <a href="javascript:history.back()" class="btn btn-secondary">
+        ⬅ Back
+    </a>
+
+</div>

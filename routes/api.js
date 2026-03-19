@@ -5,6 +5,7 @@ const User = require('../models/usermodel');
 const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET
 const fs = require('fs');
+const { askCookingAssistant } = require('../services/aiService');
 
 
 
@@ -87,7 +88,7 @@ router.post('/signupapi', async (req, res) => {
     }
 });
 
-module.exports = router;
+
 
 
 
@@ -371,3 +372,56 @@ console.log("currentPassword:", currentPassword);
 });
 
 
+router.get('/searchrecipes/:query', async (req, res) => {
+    try {
+        const { query } = req.params;
+        if (!query) {
+            return res.status(400).json({ message: 'Query parameter is required' });
+        }
+
+        const regex = new RegExp(query, 'i'); // case-insensitive search
+        const recipes = await Recipe.find({
+            $or: [
+                { title: regex },   
+                { description: regex }  
+            ]
+        });
+
+        res.status(200).json({ recipes });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
+
+const axios = require('axios');
+
+
+router.post("/chat",verifyToken, async (req,res)=>{
+  try{
+    const {message} = req.body;
+
+    if (!message){
+      return res.status(400).json({
+        message:"Message is required"
+      });
+    }
+
+    const aiReply = await askCookingAssistant(message);
+    
+    return res.json({
+      reply:aiReply
+    });
+  }catch(error){
+    console.error(error);
+    return res.status(500).json({
+      message:"AI service error"
+    });
+  }
+});
+
+
+
+
+module.exports = router;
